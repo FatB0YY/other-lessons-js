@@ -1,0 +1,42 @@
+.container {
+    padding-top: 30px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+#myInput {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px 20px 12px 5px;
+    border: 1px solid #ddd;
+    margin-bottom: 12px;
+}
+
+#myUl {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#myUl li a {
+    border: 1px solid #ddd;
+    margin-top: -1px;
+    background-color: #f6f6f6;
+    padding: 12px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #000;
+    display: block;
+}
+
+#myUl li a.searchHeader {
+    background-color: #e2e2e2;
+    cursor: default;
+}
+
+#myUl li a:hover:not(.searchHeader) {
+    background-color: #e2e2e2;
+    cursor: default;
+    background-color: #eee;
+}
