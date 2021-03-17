@@ -142,7 +142,7 @@ header {
     }
     .icon-menu:before,
     .icon-menu:after {
-        content: "";
+        content: '';
         background-color: rgb(255, 255, 255);
         position: absolute;
         width: 25px;
@@ -191,7 +191,7 @@ header {
         transform: translateX(0%);
     }
     .menu-body::before {
-        content: "";
+        content: '';
         height: 90px;
         width: 100%;
         top: 0;
@@ -235,7 +235,12 @@ header {
         border-bottom: 1px solid #fff;
     }
     .list_mb {
+        margin-top: 100px;
+        transition: all 0.55s ease;
+    }
+    .list_mb.active {
         margin-top: 50px;
+        transition: all 0.55s ease;
     }
     @keyframes magic1 {
         0% {
