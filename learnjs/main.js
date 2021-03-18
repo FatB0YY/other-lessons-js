@@ -829,4 +829,325 @@ let arr = ['HTML', 'JavaScript', 'CSS']
 let sorted = copySorted(arr)
 console.log(sorted)
 console.log(arr)
+    // калькулятор с конструктором, залупа которая не получилась
+function Calculator() {
+    this.methods = {
+        '-': (a, b) => a - b,
+        '+': (a, b) => a + b,
+        '/': (a, b) => a / b,
+        '%': (a, b) => a % b,
+        '*': (a, b) => a * b,
+        '**': (a, b) => Math.pow(a, b),
+    }
+    this.calculate = function(str) {
+        let split = str.split(' '),
+            a = +split[0],
+            op = split[1],
+            b = +split[2]
+        if (!this.methods[op] || isNaN(a) || isNaN(b)) {
+            return NaN
+        }
+        return this.methods[op](a, b)
+    }
+    this.addMethod = function(name, func) {
+        this.methods[name] = func
+    }
+}
+let calc = new Calculator()
+let calc2 = new Calculator()
+console.log(calc.calculate('3 + 7')) // 10
+console.log(calc2.calculate('3 - 7')) // -4
+console.log(calc2.calculate('3 * 7')) // 21
+console.log(calc2.calculate('3 ** 7')) // 2187
+console.log(calc2.calculate('6 / 2')) // 3
+console.log(calc2.calculate('6 % 2')) // 0
     //
+let vasya = { name: 'Вася', age: 25 }
+let petya = { name: 'Петя', age: 30 }
+let masha = { name: 'Маша', age: 28 }
+let users = [vasya, petya, masha]
+let names = users.map((obj) => {
+    return obj.name
+})
+console.log(names) // Вася, Петя, Маша
+    //
+let vasya = { name: 'Вася', surname: 'Пупкин', id: 1 }
+let petya = { name: 'Петя', surname: 'Иванов', id: 2 }
+let masha = { name: 'Маша', surname: 'Петрова', id: 3 }
+let users = [vasya, petya, masha]
+let usersMapped = users.map((user) => ({
+    // создаем новый объект
+    fullName: `${user.name} ${user.surname}`,
+    id: user.id,
+}))
+console.log(usersMapped)
+console.log(usersMapped[0].id) // 1
+console.log(usersMapped[0].fullName) // Вася Пупкин
+    //
+let vasya = { name: 'Вася', age: 25 }
+let petya = { name: 'Петя', age: 30 }
+let masha = { name: 'Маша', age: 28 }
+let arr = [vasya, petya, masha]
+const sortByAge = (arr) => {
+    arr.sort((prev, next) => prev.age - next.age)
+}
+sortByAge(arr)
+    // теперь: [vasya, masha, petya]
+console.log(arr[0].name)
+console.log(arr[1].name)
+console.log(arr[2].name)
+    //
+const shuffle = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1)) // случайный индекс от 0 до i
+            // поменять элементы местами
+            // мы используем для этого синтаксис "деструктурирующее присваивание"
+            // то же самое можно записать как:
+            // let t = array[i];
+            // array[i] = array[j];
+            // array[j] = t;
+        ;
+        [array[i], array[j]] = [array[j], array[i]]
+    }
+    return array
+        // или return array.sort(() => Math.random() - 0.5)
+}
+let arr = [1, 2, 3]
+shuffle(arr)
+console.log(arr)
+    //
+let vasya = { name: 'Вася', age: 25 }
+let petya = { name: 'Петя', age: 30 }
+let masha = { name: 'Маша', age: 29 }
+let arr = [vasya, petya, masha]
+    // const getAverageAge = (arr) => {
+    //     let sumAge = 0
+    //     let i = 0
+    //     arr.forEach((item) => {
+    //         sumAge += item.age
+    //         i++
+    //     })
+    //     let averageAge = sumAge / i
+    //     return averageAge
+    // }
+function getAverageAge(users) {
+    return users.reduce((prev, user) => prev + user.age, 0) / users.length
+}
+console.log(getAverageAge(arr)) // (25 + 30 + 29) / 3 = 28
+    //
+function unique(arr) {
+    return [...new Set(arr)] //Array(3) [ "кришна", "харе", ":-O" ]
+        //return [new Set(arr)] //Array [ Set(3) ]
+        //return new Set(arr) //Array [ Set(3) ]
+}
+let strings = [
+    'кришна',
+    'кришна',
+    'харе',
+    'харе',
+    'харе',
+    'харе',
+    'кришна',
+    'кришна',
+    ':-O',
+]
+console.log(unique(strings)) // кришна, харе, :-O
+    //
+    // перебор объектов Symbol.iterator
+let range = {
+        from: 1,
+        to: 5,
+    }
+    // 1. вызов for..of сначала вызывает эту функцию
+range[Symbol.iterator] = function() {
+        // ...она возвращает объект итератора:
+        // 2. Далее, for..of работает только с этим итератором, запрашивая у него новые значения
+        return {
+            current: this.from,
+            last: this.to,
+            // 3. next() вызывается на каждой итерации цикла for..of
+            next() {
+                // 4. он должен вернуть значение в виде объекта {done:.., value :...}
+                if (this.current <= this.last) {
+                    return { done: false, value: this.current++ }
+                } else {
+                    return { done: true }
+                }
+            },
+        }
+    }
+    // теперь работает!
+for (let num of range) {
+    console.log(num) // 1, затем 2, 3, 4, 5
+}
+//
+let range = {
+    from: 1,
+    to: 5,
+    [Symbol.iterator]() {
+        this.current = this.from
+        return this
+    },
+    next() {
+        if (this.current <= this.to) {
+            return { done: false, value: this.current++ }
+        } else {
+            return { done: true }
+        }
+    },
+}
+for (let num of range) {
+    alert(num) // 1, затем 2, 3, 4, 5
+}
+//
+// Явный вызов итератора
+let str = "Hello";
+// делает то же самое, что и
+// for (let char of str) alert(char);
+let iterator = str[Symbol.iterator]();
+while (true) {
+    let result = iterator.next();
+    if (result.done) break;
+    alert(result.value); // выводит символы один за другим
+}
+//
+//Array.from
+//Есть универсальный метод Array.from, который принимает итерируемый объект или псевдомассив и делает из него «настоящий» Array. После этого мы уже можем использовать методы массивов.
+let arrayLike = {
+    0: "Hello",
+    1: "World",
+    length: 2
+};
+let arr = Array.from(arrayLike); // (*)
+alert(arr.pop()); // World (метод работает)
+//
+//Array.from(obj[, mapFn, thisArg])
+//Необязательный второй аргумент может быть функцией, которая будет применена к каждому элементу перед добавлением в массив, а thisArg позволяет установить this для этой функции.
+// range взят из примера выше
+//
+// возводим каждое число в квадрат
+let arr = Array.from(range, num => num * num);
+alert(arr); // 1,4,9,16,25
+//
+let str = '𝒳😂';
+// разбивает строку на массив её элементов
+let chars = Array.from(str);
+alert(chars[0]); // 𝒳
+alert(chars[1]); // 😂
+alert(chars.length); // 2
+//
+//Технически это то же самое, что и:
+let str = '𝒳😂';
+let chars = []; // Array.from внутри себя выполняет тот же цикл
+for (let char of str) {
+    chars.push(char);
+}
+alert(chars);
+//
+// Map Set
+// Методы и свойства:
+// new Map()– создаёт коллекцию.
+// map.set(key, value)– записывает по ключу key значение value.
+// map.get(key)– возвращает значение по ключу или undefined, если ключ key отсутствует.
+// map.has(key)– возвращает true, если ключ key присутствует в коллекции, иначе false.
+// map.delete(key)– удаляет элемент по ключу key.
+// map.clear()– очищает коллекцию от всех элементов.
+// map.size– возвращает текущее количество элементов.
+//
+let john = { name: "John" };
+// давайте сохраним количество посещений для каждого пользователя
+let visitsCountMap = new Map();
+// объект john - это ключ для значения в объекте Map
+visitsCountMap.set(john, 123);
+alert(visitsCountMap.get(john)); // 123
+//
+// Для перебора коллекции Map есть 3 метода:
+//     map.keys() – возвращает итерируемый объект по ключам,
+//     map.values() – возвращает итерируемый объект по значениям,
+//     map.entries() – возвращает итерируемый объект по парам вида [ключ, значение], этот вариант используется по умолчанию в for..of.
+//
+let recipeMap = new Map([
+    ["огурец", 500],
+    ["помидор", 350],
+    ["лук", 50]
+]);
+// перебор по ключам (овощи)
+for (let vegetable of recipeMap.keys()) {
+    alert(vegetable); // огурец, помидор, лук
+}
+// перебор по значениям (числа)
+for (let amount of recipeMap.values()) {
+    alert(amount); // 500, 350, 50
+}
+// перебор по элементам в формате [ключ, значение]
+for (let entry of recipeMap) { // то же самое, что и recipeMap.entries()
+    alert(entry); // огурец,500 (и так далее)
+}
+//
+// выполняем функцию для каждой пары (ключ, значение)
+recipeMap.forEach((value, key, map) => {
+    alert(`${key}: ${value}`); // огурец: 500 и так далее
+});
+//
+//Так что мы можем создать Map из обычного объекта следующим образом:
+let obj = {
+    name: "John",
+    age: 30
+};
+let map = new Map(Object.entries(obj));
+//
+let prices = Object.fromEntries([
+    ['banana', 1],
+    ['orange', 2],
+    ['meat', 4]
+]);
+// now prices = { banana: 1, orange: 2, meat: 4 }
+alert(prices.orange); // 2
+//
+let map = new Map();
+map.set('banana', 1);
+map.set('orange', 2);
+map.set('meat', 4);
+let obj = Object.fromEntries(map.entries()); // make a plain object (*)
+// готово!
+// obj = { banana: 1, orange: 2, meat: 4 }
+alert(obj.orange); // 2
+// let obj = Object.fromEntries(map); // убрать .entries()
+//
+// set
+let set = new Set(["апельсин", "яблоко", "банан"]);
+for (let value of set) alert(value);
+// то же самое с forEach:
+set.forEach((value, valueAgain, set) => {
+    alert(value);
+});
+//
+// Отфильтруйте анаграммы
+let array = ['nap', 'teachers', 'cheaters', 'PAN', 'ear', 'era', 'hectares']
+    // function aclean(arr) {
+    //     let arr2 = arr.map((item) => {
+    //         return item.toLowerCase().split('').sort().join('')
+    //     })
+    //     let set = new Set(arr2)
+    //     return set
+    // }
+function aclean(arr) {
+    let set = new Set()
+    arr.forEach((item) => {
+        let sorted = item.toLowerCase().split('').sort().join('')
+        set.add(sorted, item)
+    })
+    return Array.from(set.values())
+}
+// function aclean(arr) {
+//     let map = new Map()
+//     for (let word of arr) {
+//         // разбиваем слово на буквы, сортируем и объединяем снова в строку
+//         let sorted = word.toLowerCase().split('').sort().join('') // (*)
+//         map.set(sorted, word)
+//     }
+//     return Array.from(map.values())
+// }
+console.log(aclean(array))
+    //
+    // WeakMap и WeakSet
