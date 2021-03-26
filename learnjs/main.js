@@ -1570,7 +1570,7 @@ let arr = [3, 5, 1];
 let arr2 = [8, 9, 15];
 let merged = [0, ...arr, 2, ...arr2];
 alert(merged); // 0,3,5,1,2,8,9,15 (0, затем arr, затем 2, в конце arr2)
-//     
+//
 let str = "Привет";
 alert([...str]); // П,р,и,в,е,т
 //
@@ -1581,5 +1581,252 @@ alert(Array.from(str)); // П,р,и,в,е,т
 // Но между Array.from(obj) и [...obj] есть разница:
 // Array.from работает как с псевдомассивами, так и с итерируемыми объектами
 // Оператор расширения работает только с итерируемыми объектами
-// 
+//
 // Замыкание
+function urlGenerator(domain) {
+    return function(url) {
+        return `https://${url}.${domain}`
+    }
+}
+const comUrl = urlGenerator('com') // передается замкнутая переменная domain
+console.log(comUrl('yandex'));
+//
+//IIFE выглядит так: Здесь создаётся и немедленно вызывается Function Expression. Так что код выполняется сразу же и у него есть свои локальные переменные.
+(function() {
+    let message = "Hello";
+    alert(message); // Hello
+})();
+//
+// Пути создания IIFE
+(function() {
+    alert("Скобки вокруг функции");
+})();
+
+(function() {
+    alert("Скобки вокруг всего");
+}());
+
+! function() {
+    alert("Выражение начинается с логического оператора NOT");
+}();
+
++
+
+function() {
+    alert("Выражение начинается с унарного плюса");
+}();
+//
+function Counter() {
+    let count = 0;
+    this.up = function() {
+        return ++count;
+    };
+    this.down = function() {
+        return --count;
+    };
+}
+let counter = new Counter();
+alert(counter.up()); // 1
+alert(counter.up()); // 2
+alert(counter.down()); // 1
+//
+// Сумма с помощью замыканий
+function sum(a) {
+    return function b(b) {
+        return a + b
+    }
+}
+//ахах нихуя не понял из learn.js, посмотрела владилена и сразу все стало ez
+//
+//Фильтрация с помощью функции
+let arr = [1, 2, 3, 4, 5, 6, 7]
+
+function inBetween(a, b) {
+    return function(x) {
+        if (x >= a && x <= b) {
+            return x
+        }
+    }
+}
+
+function inArray(arr) {
+    return function(x) {
+        if (arr.includes(x)) {
+            return x
+        }
+    }
+}
+console.log(arr.filter(inBetween(3, 6))) // 3,4,5,6);
+console.log(arr.filter(inArray([1, 2, 10]))) // 1,2);
+    //
+    //Сортировать по полю
+let users = [
+    { name: 'John', age: 20, surname: 'Johnson' },
+    { name: 'Pete', age: 18, surname: 'Peterson' },
+    { name: 'Ann', age: 19, surname: 'Hathaway' },
+]
+
+function byField(field) {
+    return (a, b) => (a[field] > b[field] ? 1 : -1)
+}
+users.sort(byField('age')) // name
+users.forEach((user) => console.log(user.name)) // Pete, Ann, John
+    //
+    // var
+    // Существует 2 основных отличия var от let/const:
+    //     Переменные var не имеют блочной области видимости, они ограничены, как минимум, телом функции.
+    //     Объявления (инициализация) переменных varпроизводится в начале исполнения функции (или скрипта для глобальных переменных).
+    //
+    // Глобальный объект
+window.currentUser = {
+    name: "John"
+};
+// Объект функции, NFE
+function sayHi() {
+    alert("Hi");
+}
+alert(sayHi.name); // sayHi
+//
+//   Свойство «length»
+// Ещё одно встроенное свойство «length» содержит количество параметров функции в её объявлении. Например:
+function f1(a) {}
+
+function f2(a, b) {}
+
+function many(a, b, ...more) {}
+alert(f1.length); // 1
+alert(f2.length); // 2
+alert(many.length); // 2
+//
+function ask(question, ...handlers) {
+    let isYes = confirm(question);
+
+    for (let handler of handlers) {
+        if (handler.length == 0) {
+            if (isYes) handler();
+        } else {
+            handler(isYes);
+        }
+    }
+
+}
+// для положительных ответов вызываются оба типа обработчиков
+// для отрицательных - только второго типа
+ask("Вопрос?", () => alert('Вы ответили да'), result => alert(result));
+//
+let sayHi = function func(who) {
+    if (who) {
+        alert(`Hello, ${who}`);
+    } else {
+        func("Guest"); // использует func, чтобы снова вызвать себя же
+    }
+};
+sayHi(); // Hello, Guest
+//
+function makeCounter() {
+    let count = 0
+
+    function counter() {
+        return count++
+    }
+    counter.set = (value) => (count = value)
+    counter.decrease = () => count--
+        return counter
+}
+//
+function sum(a) {
+    let currentSum = a
+
+    function f(b) {
+        currentSum += b
+        return f
+    }
+
+    f.toString = function() {
+        return currentSum
+    }
+
+    return f
+}
+console.log(sum(0)(1)(2)(3)(4)(5)) // 15
+    //
+    //Синтаксис "new Function"
+let func = new Function([arg1, arg2, ...argN], functionBody);
+//
+let sum = new Function('a', 'b', 'return a + b');
+alert(sum(1, 2)); // 3
+//
+//Но когда функция создаётся с использованием new Function, в её [[Environment]] записывается ссылка не на внешнее лексическое окружение, в котором она была создана, а на глобальное. Поэтому такая функция имеет доступ только к глобальным переменным.
+function getFunc() {
+    let value = "test";
+    let func = new Function('alert(value)');
+    return func;
+}
+getFunc()(); // ошибка: value не определено
+//
+// Планирование: setTimeout и setInterval
+// setTimeout позволяет вызвать функцию один раз через определённый интервал времени.
+// setInterval позволяет вызывать функцию регулярно, повторяя вызов через определённый интервал времени.
+//Например, данный код вызывает sayHi() спустя одну секунду:
+function sayHi() {
+    alert('Привет');
+}
+setTmeout(sayHi, 1000);
+//
+// С аргументами:
+function sayHi(phrase, who) {
+    alert(phrase + ', ' + who);
+}
+setTimeout(sayHi, 1000, "Привет", "Джон"); // Привет, Джон
+// Отмена через clearTimeout
+let timerId = setTimeout(() => alert("ничего не происходит"), 1000);
+alert(timerId); // идентификатор таймера
+clearTimeout(timerId);
+alert(timerId); // тот же идентификатор (не принимает значение null после отмены)
+//
+//setInterval
+// повторить с интервалом 2 секунды
+let timerId = setInterval(() => alert('tick'), 2000);
+// остановить вывод через 5 секунд
+setTimeout(() => {
+    clearInterval(timerId);
+    alert('stop');
+}, 5000);
+//
+//Рекурсивный setTimeout
+//Например, необходимо написать сервис, который отправляет запрос для получения данных на сервер каждые 5 секунд, но если сервер перегружен, то необходимо увеличить интервал запросов до 10, 20, 40 секунд… Вот псевдокод:
+let delay = 5000;
+let timerId = setTimeout(function request() {
+    //...отправить запрос...
+    if (false) { //ошибка запроса из - за перегрузки сервера
+        // увеличить интервал для следующего запроса
+        delay *= 2;
+    }
+    timerId = setTimeout(request, delay);
+}, delay);
+//
+//Рекурсивный setTimeout позволяет задать задержку между выполнениями более точно, чем setInterval.
+let i = 1;
+setTimeout(function run() {
+    func(i);
+    setTimeout(run, 100);
+}, 100);
+//
+// Вывод каждую секунду
+function printNumbers(from, to) {
+    let x = from
+
+    setTimeout(function go() {
+        console.log(x)
+        if (x < to) {
+            setTimeout(go, 1000)
+        } else {
+            console.log('stop')
+            clearTimeout(printNumbers)
+        }
+        x++
+    }, 1000)
+}
+printNumbers(5, 7)
+    //
+    // Декораторы и переадресация вызова, call/apply

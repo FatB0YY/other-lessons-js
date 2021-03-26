@@ -1,12 +1,10 @@
 'use strict'
 
 function titleCase(title, minorWords) {
-    if (typeof minorWords !== 'undefined') {
-        minorWords = minorWords.toLowerCase().split(' ')
-    } else {
-        minorWords = []
-    }
-
+    var minorWords =
+        typeof minorWords !== 'undefined' ?
+        minorWords.toLowerCase().split(' ') :
+        []
     return title
         .toLowerCase()
         .split(' ')
@@ -21,6 +19,4 @@ function titleCase(title, minorWords) {
         .join(' ')
 }
 
-console.log(
-    titleCase('a clash of KINGS rgth rgte ww efSSSAAdgg 3 ', 'a rg rgth')
-)
+console.log(titleCase('a clash of KINGS rgth rgte ww efSSSAAdgg ', 'a rg rgth'))
