@@ -1636,7 +1636,7 @@ function sum(a) {
         return a + b
     }
 }
-//ахах нихуя не понял из learn.js, посмотрела владилена и сразу все стало ez
+//ахах нихуя не понял из learn.js, ��осмотрела владилена и сразу все стало ez
 //
 //Фильтрация с помощью функции
 let arr = [1, 2, 3, 4, 5, 6, 7]
@@ -1830,3 +1830,224 @@ function printNumbers(from, to) {
 printNumbers(5, 7)
     //
     // Декораторы и переадресация вызова, call/apply
+    // Прозрачное кеширование
+function slow(x) {
+    // здесь могут быть ресурсоёмкие вычисления
+    alert(`Called with ${x}`);
+    return x;
+}
+
+function cachingDecorator(func) {
+    let cache = new Map();
+
+    return function(x) {
+        if (cache.has(x)) { // если кеш содержит такой x,
+            return cache.get(x); // читаем из него результат
+        }
+
+        let result = func(x); // иначе, вызываем функцию
+
+        cache.set(x, result); // и кешируем (запоминаем) результат
+        return result;
+    };
+}
+slow = cachingDecorator(slow);
+alert(slow(1)); // slow(1) кешируем
+alert("Again: " + slow(1)); // возвращаем из кеша
+alert(slow(2)); // slow(2) кешируем
+alert("Again: " + slow(2)); // возвращаем из кеша
+//
+//Применение «func.call» для передачи контекста.
+func.call(context, arg1, arg2, ...)
+    // Он запускает функцию func, используя первый аргумент как её контекст this, а последующие – как её аргументы.
+    //
+function sayHi() {
+    alert(this.name);
+}
+let user = { name: "John" };
+let admin = { name: "Admin" };
+// используем 'call' для передачи различных объектов в качестве 'this'
+sayHi.call(user); // John
+sayHi.call(admin); // Admin
+//
+function say(phrase) {
+    alert(this.name + ': ' + phrase);
+}
+let user = { name: "John" };
+// 'user' становится 'this', и "Hello" становится первым аргументом
+say.call(user, "Hello"); // John: Hello
+//
+// В нашем случае мы можем использовать call в обёртке для передачи контекста в исходную функцию:
+let worker = {
+    someMethod() {
+        return 1;
+    },
+
+    slow(x) {
+        alert("Called with " + x);
+        return x * this.someMethod(); // (*)
+    }
+};
+
+function cachingDecorator(func) {
+    let cache = new Map();
+    return function(x) {
+        if (cache.has(x)) {
+            return cache.get(x);
+        }
+        let result = func.call(this, x); // теперь 'this' передаётся правильно
+        cache.set(x, result);
+        return result;
+    };
+}
+worker.slow = cachingDecorator(worker.slow); // теперь сделаем её кеширующей
+alert(worker.slow(2)); // работает
+alert(worker.slow(2)); // работает, не вызывая первоначальную функцию
+//
+// bind, apply, call Минин
+
+const person = {
+    name: 'rodion',
+    age: 18,
+    logInfo: function(job, phone) {
+        console.group(`${this.name} info:`)
+        console.log(`Name is ${this.name}`)
+        console.log(`Age is ${this.age}`)
+        console.log(`Job is ${job}`)
+        console.log(`Phone is ${phone}`)
+        console.groupEnd()
+    },
+}
+const elena = {
+        name: 'elena',
+        age: 23,
+    }
+    //person.logInfo.bind(elena, 'frontend', '+79999999')() // возвращает функцию, не вызывается
+    //person.logInfo.call(elena, 'frontend', '+79999999') //сразу вызывается
+person.logInfo.apply(elena, ['frontend', '+79999999'])
+    //
+    // перемножаем любой массив, так как в прототип глобального класса добавили свой прототип
+const array = [1, 2, 3, 4, 5]
+Array.prototype.multBy = function(n) {
+    return this.map(function(i) {
+        return i * n
+    })
+}
+
+console.log(array.multBy(2))
+    //
+    //Вот более мощный cachingDecorator:
+let worker = {
+    slow(min, max) {
+        alert(`Called with ${min},${max}`);
+        return min + max;
+    }
+};
+
+function cachingDecorator(func, hash) {
+    let cache = new Map();
+    return function() {
+        let key = hash(arguments); // (*)
+        if (cache.has(key)) {
+            return cache.get(key);
+        }
+        let result = func.call(this, ...arguments); // (**)
+        cache.set(key, result);
+        return result;
+    };
+}
+
+function hash() {
+    alert([].join.call(arguments)); // 1,2 //Этот трюк называется заимствование метода.
+}
+worker.slow = cachingDecorator(worker.slow, hash);
+alert(worker.slow(3, 5)); // работает
+alert("Again " + worker.slow(3, 5)); // аналогично (из кеша)
+//
+//Декоратор-шпион
+function work(a, b) {
+    console.log(a + b) // произвольная функция или метод
+}
+
+// function spy(func, hash) {
+//     let cache = new Map()
+//     return function() {
+//         let key = hash(arguments)
+//         if (cache.has(key)) {
+//             return cache.get(key)
+//         }
+
+//         let result = func.call(this, ...arguments)
+//         cache.set(key, result)
+//         return result
+//     }
+// }
+
+// function hash() {
+//     console.log([].join.call(...arguments))
+// }
+// work = spy(work, hash)
+
+function spy(func) {
+    function wrapper(...args) {
+        wrapper.calls.push(args)
+        return func.apply(this, arguments)
+    }
+
+    wrapper.calls = []
+
+    return wrapper
+}
+
+work = spy(work)
+work(1, 2) // 3
+work(4, 5)
+for (let args of work.calls) {
+    console.log('call:' + args.join()) // "call:1,2", "call:4,5"
+}
+//
+function f(x) {
+    console.log(x)
+}
+
+function delay(f, ms) {
+    return function() {
+        setTimeout(() => f.apply(this, arguments), ms)
+    }
+}
+
+// создаём обёртки
+let f1000 = delay(f, 1000)
+let f2500 = delay(f, 2500)
+
+f1000('test') // показывает "test" после 1000 мс
+f2500('test') // показывает "test" после 2500 мс
+    //
+    // Привязка контекста к функции
+    //Потеря «this»
+let user = {
+    firstName: "Вася",
+    sayHi() {
+        alert(`Привет, ${this.firstName}!`);
+    }
+};
+setTimeout(user.sayHi, 1000); // Привет, undefined!
+// 
+// Решение 2: привязать контекст с помощью bind
+let user = {
+    firstName: "Вася",
+    sayHi() {
+        alert(`Привет, ${this.firstName}!`);
+    }
+};
+let sayHi = user.sayHi.bind(user); // (*)
+sayHi(); // Привет, Вася!
+setTimeout(sayHi, 1000); // Привет, Вася!
+// 
+// bindAll
+for (let key in user) {
+    if (typeof user[key] == 'function') {
+        user[key] = user[key].bind(user);
+    }
+}
+//
