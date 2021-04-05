@@ -2032,7 +2032,7 @@ let user = {
     }
 };
 setTimeout(user.sayHi, 1000); // Привет, undefined!
-// 
+//
 // Решение 2: привязать контекст с помощью bind
 let user = {
     firstName: "Вася",
@@ -2043,7 +2043,7 @@ let user = {
 let sayHi = user.sayHi.bind(user); // (*)
 sayHi(); // Привет, Вася!
 setTimeout(sayHi, 1000); // Привет, Вася!
-// 
+//
 // bindAll
 for (let key in user) {
     if (typeof user[key] == 'function') {
@@ -2051,3 +2051,138 @@ for (let key in user) {
     }
 }
 //
+//
+//Флаги и дескрипторы свойств
+// writable – если true, свойство можно изменить, иначе оно только для чтения.
+// enumerable – если true, свойство перечисляется в циклах, в противном случае циклы его игнорируют.
+// configurable – если true, свойство можно удалить, а эти атрибуты можно изменять, иначе этого делать нельзя.
+let descriptor = Object.getOwnPropertyDescriptor(obj, propertyName); // полная инфа о св-ве
+//Например:
+let user = {
+    name: "John"
+};
+let descriptor = Object.getOwnPropertyDescriptor(user, 'name');
+alert(JSON.stringify(descriptor, null, 2));
+/* дескриптор свойства:
+{
+  "value": "John",
+  "writable": true,
+  "enumerable": true,
+  "configurable": true
+}
+*/
+//
+// Чтобы изменить флаги, мы можем использовать метод Object.defineProperty.
+Object.defineProperty(obj, propertyName, descriptor)
+    //Только для чтения
+let user = {
+    name: "John"
+};
+Object.defineProperty(user, "name", {
+    writable: false
+});
+user.name = "Pete"; // Ошибка: Невозможно изменить доступное только для чтения свойство 'name'
+//
+// Встроенный метод toString в объектах – неперечислимый, его не видно в цикле for..in. Но если мы напишем свой собственный метод toString, цикл for..in будет выводить его по умолчанию:
+// Если мы этого не хотим, можно установить для свойства enumerable:false. Тогда оно перестанет появляться в цикле for..in аналогично встроенному toString:
+let user = {
+    name: "John",
+    toString() {
+        return this.name;
+    }
+};
+Object.defineProperty(user, "toString", {
+    enumerable: false
+});
+// Теперь наше свойство toString пропало из цикла:
+for (let key in user) alert(key); // name
+// Существует метод Object.defineProperties(obj, descriptors), который позволяет определять множество свойств сразу.
+//
+// set
+let user = {
+    name: "John",
+    surname: "Smith",
+    get fullName() {
+        return `${this.name} ${this.surname}`;
+    },
+    set fullName(value) {
+        [this.name, this.surname] = value.split(" ");
+    }
+};
+// set fullName запустится с данным значением
+user.fullName = "Alice Cooper";
+alert(user.name); // Alice
+alert(user.surname); // Cooper
+//
+//
+// Класс: базовый синтаксис
+class User {
+    constructor(name) {
+        this.name = name;
+    }
+    sayHi() {
+        alert(this.name);
+    }
+}
+//
+class User {
+    constructor(name) {
+        // вызывает сеттер
+        this.name = name;
+    }
+    get name() {
+        return this._name;
+    }
+    set name(value) {
+        if (value.length < 4) {
+            alert("Имя слишком короткое.");
+            return;
+        }
+        this._name = value;
+    }
+}
+let user = new User("Иван");
+alert(user.name); // Иван
+user = new User(""); // Имя слишком короткое.
+//
+class MyClass {
+    prop = value; // свойство
+    constructor(...) { // конструктор
+        // ...
+    }
+    method(...) {} // метод
+    get something(...) {} // геттер
+    set something(...) {} // сеттер
+        [Symbol.iterator]() {} // метод с вычисляемым именем (здесь - символом)
+        // ...
+}
+//
+// time now
+class Clock {
+    constructor({ template }) {
+        this.template = template
+    }
+    render() {
+        let date = new Date()
+        let hours = date.getHours()
+        if (hours < 10) hours = '0' + hours
+        let mins = date.getMinutes()
+        if (mins < 10) mins = '0' + mins
+        let secs = date.getSeconds()
+        if (secs < 10) secs = '0' + secs
+        let output = this.template
+            .replace('h', hours)
+            .replace('m', mins)
+            .replace('s', secs)
+        console.log(output)
+    }
+    stop() {
+        clearInterval(this.timer)
+    }
+    start() {
+        this.render()
+        this.timer = setInterval(() => this.render(), 1000)
+    }
+}
+let clock = new Clock({ template: 'h:m:s' })
+clock.start()
