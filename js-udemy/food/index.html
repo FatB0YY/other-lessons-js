@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Food</title>
+    <link rel="stylesheet" href="css/modal.css" />
     <link rel="stylesheet" href="css/style.css" />
 </head>
 
@@ -20,7 +21,9 @@
             </nav>
         </div>
         <div class="header__right-block">
-            <button class="btn btn_white">Связаться с нами</button>
+            <button data-modal="true" class="btn btn_white">
+                    Связаться с нами
+                </button>
         </div>
     </header>
     <div class="sidepanel">
@@ -91,7 +94,9 @@
                 </div>
             </div>
             <div class="offer__action">
-                <button class="btn btn_dark">Связаться с нами</button>
+                <button data-modal="true" class="btn btn_dark">
+                        Связаться с нами
+                    </button>
             </div>
         </div>
         <div class="container">
@@ -247,7 +252,7 @@
                 <input required placeholder="Ваше имя" name="name" type="text" class="order__input" />
                 <input required placeholder="Ваш номер телефона" name="phone" type="phone" class="order__input" />
                 <img src="icons/right.svg" alt="right" />
-                <button class="btn btn_dark btn_min">
+                <button data-modal="true" class="btn btn_dark btn_min">
                         Перезвонить мне
                     </button>
             </form>
@@ -304,11 +309,13 @@
         </div>
     </footer>
 
-    <div class="modal">
-        <div class="modal__dialog">
-            <div class="modal__content">
+    <div class="modal" data-close="true">
+        <div class="modal-overlay">
+            <div class="modal-window">
+                <button data-close="true" class="modal__close">
+                        &times;
+                    </button>
                 <form action="#">
-                    <div class="modal__close">&times;</div>
                     <div class="modal__title">
                         Мы свяжемся с вами как можно быстрее!
                     </div>
