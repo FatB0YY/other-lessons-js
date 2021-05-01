@@ -1,0 +1,34 @@
+@import '../fonts.css';
+@import '~normalize.css';
+@import 'header';
+@import 'toolbar';
+@import 'formula';
+@import 'table';
+@import 'dashboard';
+@import 'variables';
+@import 'mixins';
+*,
+*::after,
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+button {
+    cursor: pointer;
+}
+
+body {
+    font-family: 'Roboto-Regular', sans-serif;
+    background-color: #fff;
+    font-size: 12px;
+}
+
+.excel {
+    position: relative;
+    color: #888;
+    height: 100%;
+    max-width: 100%; //чтобы больше чем ширина экрана эксель не мог в себя принимать + гор скролл
+    font-size: 0.8rem;
+}

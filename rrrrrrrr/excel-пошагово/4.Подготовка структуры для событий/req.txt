@@ -1,0 +1,31 @@
+Webpack (imports/exports)
+    Babel
+    Scss
+    EsLint
+    2 Modes
+        - Dev 
+            Dev Server, SourceMaps, EsLint, Not Minified JS & CSS
+        - Prod
+            Minified Code и еще много всего... (npm list)
+
+Git
+    Production
+        1.0.0
+        ------------
+    Development
+        1.0.1
+        ----------------               |PullRequest+, после new brach удаляется 
+        new branch ----------------'-- | наверх
+
+Планирование структуры ООП
+    Главный компонент: 
+        1. excel - вывод в HTML
+    4 компонента:
+        1. header
+        2. toolbar
+        3. formula
+        4. table
+        все классы (компоненты) мы будем передавать в excel
+    Другое:
+        1. ExcelComponent - общий API
+        2. DOMListener - добавлние/удаление слушателей
